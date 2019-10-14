@@ -1,0 +1,63 @@
+ID: openSAPHANA
+_schema-version: "2.1"
+parameters:
+  deploy_mode: html5-repo
+version: 0.0.1
+modules:
+  - name: openSAPHANA_appRouter
+    type: approuter.nodejs
+    path: openSAPHANA_appRouter
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: openSAPHANA_html5_repo_runtime
+  - name: openSAPHANA_ui_deployer
+    type: com.sap.html5.application-content
+    path: openSAPHANA_ui_deployer
+    requires:
+      - name: openSAPHANA_html5_repo_host
+  - name: openSAPHANA-db
+    type: hdb
+    path: db
+    parameters:
+      memory: 256M
+      disk-quota: 256M
+    requires:
+      - name: openSAPHANA-db-hdi-container
+  - name: openSAPHANA-srv
+    type: nodejs
+    path: srv
+    parameters:
+      memory: 512M
+      disk-quota: 256M
+    provides:
+      - name: srv_api
+        properties:
+          url: ${default-url}
+    requires:
+      - name: openSAPHANA-db-hdi-container
+      - name: openSAPHANA-uaa
+resources:
+  - name: openSAPHANA_html5_repo_runtime
+    parameters:
+      service-plan: app-runtime
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: openSAPHANA_html5_repo_host
+    parameters:
+      service-plan: app-host
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: openSAPHANA-db-hdi-container
+    type: com.sap.xs.hdi-container
+    properties:
+      hdi-container-name: ${service-name}
+  - name: openSAPHANA-uaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service-plan: application
+      service: xsuaa
+      config:
+        xsappname: openSAPHANA-${space}
+        tenant-mode: dedicated
