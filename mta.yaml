@@ -13,6 +13,12 @@ modules:
     requires:
       - name: openSAPHANA_html5_repo_runtime
       - name: openSAPHANA-uaa
+      - name: srv_api
+        group: destinations
+        properties:
+          name: srv_api
+          url: '~{url}'
+          forwardAuthToken: true
   - name: openSAPHANA_ui_deployer
     type: com.sap.html5.application-content
     path: openSAPHANA_ui_deployer
@@ -44,7 +50,7 @@ modules:
     path: srv
     parameters:
       memory: 512M
-      disk-quota: 256M
+      disk-quota: 1024M
     provides:
       - name: srv_api
         properties:
